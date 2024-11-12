@@ -7,7 +7,7 @@ from pathlib import Path
 from torch import device as torch_device
 from torch.utils.data import random_split
 from utils.models import do_model_pool
-from utils.dataset import import_dataset, do_fl_partitioning, get_df_dist, get_ct_dist
+from utils.dataset import import_dataset, do_fl_partitioning
 from utils.utils import *
 from utils.file_name import gen_filename
 from utils.server import *
@@ -15,6 +15,7 @@ from args import args
 from log import logger, HFILE
 from utils.strats import Evaluate,get_model_size,EvaluateLora
 from utils.simple_quant import original_msg_size,quant_msg_size
+
 client_lr = args.cl_lr
 
 
@@ -218,6 +219,7 @@ if __name__ == "__main__":
 
 
     def client_fn(cid):
+
         from client import FlowerClient
         info = Info(
             model=clients_models[int(cid)],
@@ -252,7 +254,7 @@ if __name__ == "__main__":
             quant_bits=args.quant_bits,
         )
 
-        return FlowerClient(info,fl_info)
+        return FlowerClient(info,fl_info).to_client()
 
     # (optional) specify Ray config
     ray_init_args = {"include_dashboard": False}
